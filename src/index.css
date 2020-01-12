@@ -1,13 +1,141 @@
+html,
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: "Roboto", sans-serif;
+  height: 100%;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+#root {
+  padding: 0.1px;
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid var(--card-color);
+  border-radius: 10px;
+  background: white;
+  transition-duration: 0.2s;
+}
+.card path {
+  transition-duration: 0.2s;
+}
+
+.card-active {
+  background: var(--card-color);
+}
+.card-active path {
+  fill: white !important;
+}
+
+.card-button {
+  cursor: pointer;
+}
+.card-button:hover {
+  background: var(--card-color);
+}
+.card-button:hover path {
+  fill: white !important;
+}
+
+.columns {
+  display: flex;
+  flex-direction: row;
+  padding-left: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.columns > * {
+  margin-right: 10px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  transition-duration: 0.2s;
+}
+.column:hover {
+  background: #e0f7fa;
+}
+
+.column .plus {
+  opacity: 0;
+  transition-duration: 0.2s;
+}
+.column:hover .plus {
+  opacity: 1;
+}
+
+.borne {
+  height: 30px;
+  background-color: #43a047;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.half {
+  display: flex;
+}
+
+.half-top {
+  flex-direction: column-reverse;
+}
+.half-top > * {
+  margin-bottom: 10px;
+}
+
+.half-bottom {
+  flex-direction: column;
+}
+.half-bottom > * {
+  margin-top: 10px;
+}
+
+.hand {
+  display: flex;
+  flex-direction: row;
+  padding-left: 20px;
+}
+.hand > * {
+  margin-right: 20px;
+}
+
+.add-layer {
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-modal {
+  display: flex;
+  flex-direction: row;
+  padding-left: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+}
+.add-modal > * {
+  margin-right: 20px;
+}
+
+.add-modal-column {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+.add-modal-column > * {
+  margin-bottom: 20px;
 }
