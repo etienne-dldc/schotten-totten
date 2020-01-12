@@ -2,12 +2,15 @@ import React from "react";
 import { Card } from "./Card";
 import { CardRef, ColumData, Size } from "../utils";
 
+export type HalfName = "top" | "bottom";
+
 interface Props {
   playing: CardRef | null;
   column: ColumData;
-  half: "top" | "bottom";
+  half: HalfName;
   size: number;
-  onAdd: (half: "top" | "bottom") => void;
+  columnIndex: number;
+  onCardClick: (column: number, half: HalfName) => void;
   cardSize: Size;
 }
 
@@ -16,8 +19,9 @@ export const Half: React.FC<Props> = ({
   half,
   size,
   playing,
-  onAdd,
-  cardSize
+  onCardClick: onAdd,
+  cardSize,
+  columnIndex
 }) => {
   return (
     <div className={`half half-${half}`}>
@@ -36,7 +40,7 @@ export const Half: React.FC<Props> = ({
               size={size}
               plus={playing === null}
               className="plus"
-              onClick={() => onAdd(half)}
+              onClick={() => onAdd(columnIndex, half)}
             />
           );
         }

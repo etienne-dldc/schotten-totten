@@ -1,9 +1,10 @@
 import React from "react";
 import { Column } from "./Column";
-import { Card } from "./Card";
 import produce from "immer";
 import { ModalGrid } from "./ModalGrid";
-import { ColumData, CardRef } from "../utils";
+import { ColumData } from "../utils";
+import { Hand } from "./Hand";
+import { HalfName } from "./Half";
 
 interface AddToColumn {
   column: number;
@@ -11,10 +12,6 @@ interface AddToColumn {
 }
 
 type Columns = Array<ColumData>;
-
-type MaybeCard = CardRef | null;
-
-type Hand = [MaybeCard, MaybeCard, MaybeCard, MaybeCard, MaybeCard, MaybeCard];
 
 export const App: React.FC = () => {
   const [columns, setColumns] = React.useState<Columns>([
@@ -41,6 +38,9 @@ export const App: React.FC = () => {
   );
   const [addToHand, setAddToHand] = React.useState<null | number>(null);
   const [playHand, setPlayHand] = React.useState<null | number>(null);
+  const [selectedColumn, setSelectedColumn] = React.useState<null | number>(
+    null
+  );
 
   const usedCards = React.useMemo(() => {
     const used = new Set<string>();
@@ -59,67 +59,55 @@ export const App: React.FC = () => {
 
   const playing = playHand !== null ? hand[playHand]! : null;
 
+  const onCardClick = React.useCallback(
+    (column: number, half: HalfName) => {
+      if (playing) {
+        setColumns(
+          produce((draft: Columns) => {
+            draft[column][half].push({
+              ...playing
+            });
+          })
+        );
+        setHand(
+          produce((draft: Hand) => {
+            draft[playHand!] = null;
+          })
+        );
+        setPlayHand(null);
+      } else {
+        setAddToColumn({ column, half });
+      }
+    },
+    [playHand, playing]
+  );
+
   return (
     <>
       <div>
         <div className="columns">
           {columns.map((col, i) => (
             <Column
+              isActive={i === selectedColumn}
               playing={playing}
               column={col}
+              index={i}
               key={i}
-              onAdd={half => {
-                if (playing) {
-                  setColumns(
-                    produce((draft: Columns) => {
-                      draft[i][half].push({
-                        ...playing
-                      });
-                    })
-                  );
-                  setHand(
-                    produce((draft: Hand) => {
-                      draft[playHand!] = null;
-                    })
-                  );
-                  setPlayHand(null);
-                } else {
-                  setAddToColumn({ column: i, half });
-                }
+              onCardClick={onCardClick}
+              onBorneClick={column => {
+                setSelectedColumn(prev => (prev === column ? null : column));
               }}
             />
           ))}
         </div>
-        <div className="hand">
-          {hand.map((ref, i) => {
-            if (ref === null) {
-              return (
-                <Card
-                  key={i}
-                  size={80}
-                  direction="vertical"
-                  plus
-                  onClick={() => {
-                    setAddToHand(i);
-                  }}
-                />
-              );
-            }
-            return (
-              <Card
-                key={i}
-                size={80}
-                direction="vertical"
-                family={ref.family}
-                num={ref.num}
-                active={playHand === i}
-                onClick={() => {
-                  setPlayHand(prev => (prev === i ? null : i));
-                }}
-              />
-            );
-          })}
-        </div>
+        <Hand
+          hand={hand}
+          onAddCard={i => setAddToHand(i)}
+          onCardClick={i => {
+            setPlayHand(prev => (prev === i ? null : i));
+          }}
+          playHand={playHand}
+        />
       </div>
       {addToColumn && (
         <ModalGrid
