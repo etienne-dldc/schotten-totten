@@ -10,8 +10,10 @@ interface Props {
   half: HalfName;
   size: number;
   columnIndex: number;
-  onCardClick: (column: number, half: HalfName) => void;
+  onAddCardClick: (column: number, half: HalfName) => void;
+  onCardClick: (ref: CardRef) => void;
   cardSize: Size;
+  willDeleteCard: null | CardRef;
 }
 
 export const Half: React.FC<Props> = ({
@@ -19,7 +21,9 @@ export const Half: React.FC<Props> = ({
   half,
   size,
   playing,
-  onCardClick: onAdd,
+  onAddCardClick,
+  onCardClick,
+  willDeleteCard,
   cardSize,
   columnIndex
 }) => {
@@ -28,7 +32,23 @@ export const Half: React.FC<Props> = ({
       {[0, 1, 2].map(i => {
         const ref = column[half][i];
         if (ref) {
-          return <Card key={i} size={size} num={ref.num} family={ref.family} />;
+          const active =
+            willDeleteCard === null
+              ? false
+              : willDeleteCard.num === ref.num &&
+                willDeleteCard.family === ref.family;
+          return (
+            <Card
+              key={i}
+              size={size}
+              num={ref.num}
+              family={ref.family}
+              active={active}
+              onClick={() => {
+                onCardClick(ref);
+              }}
+            />
+          );
         }
         if (i === column[half].length) {
           return (
@@ -40,7 +60,7 @@ export const Half: React.FC<Props> = ({
               size={size}
               plus={playing === null}
               className="plus"
-              onClick={() => onAdd(columnIndex, half)}
+              onClick={() => onAddCardClick(columnIndex, half)}
             />
           );
         }

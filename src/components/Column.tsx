@@ -8,17 +8,21 @@ interface Props {
   playing: CardRef | null;
   column: ColumData;
   index: number;
-  onCardClick: (column: number, half: "top" | "bottom") => void;
+  willDeleteCard: CardRef | null;
+  onAddCardClick: (column: number, half: "top" | "bottom") => void;
+  onCardClick: (ref: CardRef) => void;
   onBorneClick: (column: number) => void;
 }
 
 export const Column: React.FC<Props> = ({
   column,
-  onCardClick: onAdd,
+  onAddCardClick,
   playing,
   index,
   onBorneClick,
-  isActive
+  isActive,
+  onCardClick,
+  willDeleteCard
 }) => {
   const size = 50;
   const cardSize = getCardSize(size, "horizontal");
@@ -29,8 +33,10 @@ export const Column: React.FC<Props> = ({
         columnIndex={index}
         column={column}
         cardSize={cardSize}
-        onCardClick={onAdd}
+        onAddCardClick={onAddCardClick}
+        onCardClick={onCardClick}
         playing={playing}
+        willDeleteCard={willDeleteCard}
         size={size}
         half="top"
       />
@@ -44,8 +50,10 @@ export const Column: React.FC<Props> = ({
         columnIndex={index}
         column={column}
         cardSize={cardSize}
-        onCardClick={onAdd}
+        onAddCardClick={onAddCardClick}
+        onCardClick={onCardClick}
         playing={playing}
+        willDeleteCard={willDeleteCard}
         size={size}
         half="bottom"
       />

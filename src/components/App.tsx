@@ -2,7 +2,7 @@ import React from "react";
 import { Column } from "./Column";
 import produce from "immer";
 import { ModalGrid } from "./ModalGrid";
-import { ColumData } from "../utils";
+import { ColumData, CardRef } from "../utils";
 import { Hand } from "./Hand";
 import { HalfName } from "./Half";
 
@@ -41,6 +41,9 @@ export const App: React.FC = () => {
   const [selectedColumn, setSelectedColumn] = React.useState<null | number>(
     null
   );
+  const [willDeleteCard, setWillDeleteCard] = React.useState<null | CardRef>(
+    null
+  );
 
   const usedCards = React.useMemo(() => {
     const used = new Set<string>();
@@ -59,7 +62,7 @@ export const App: React.FC = () => {
 
   const playing = playHand !== null ? hand[playHand]! : null;
 
-  const onCardClick = React.useCallback(
+  const onAddCardClick = React.useCallback(
     (column: number, half: HalfName) => {
       if (playing) {
         setColumns(
@@ -82,6 +85,24 @@ export const App: React.FC = () => {
     [playHand, playing]
   );
 
+  const onCardClick = React.useCallback(
+    (ref: CardRef) => {
+      const isActive =
+        willDeleteCard === null
+          ? false
+          : willDeleteCard.num === ref.num &&
+            willDeleteCard.family === ref.family;
+      if (isActive) {
+        setWillDeleteCard(null);
+      } else {
+        setWillDeleteCard(ref);
+      }
+    },
+    [willDeleteCard]
+  );
+
+  console.log({ columns });
+
   return (
     <>
       <div>
@@ -93,7 +114,9 @@ export const App: React.FC = () => {
               column={col}
               index={i}
               key={i}
+              willDeleteCard={willDeleteCard}
               onCardClick={onCardClick}
+              onAddCardClick={onAddCardClick}
               onBorneClick={column => {
                 setSelectedColumn(prev => (prev === column ? null : column));
               }}
@@ -108,6 +131,33 @@ export const App: React.FC = () => {
           }}
           playHand={playHand}
         />
+        {willDeleteCard && (
+          <button
+            onClick={() => {
+              setColumns(columns =>
+                columns.map(col => ({
+                  top: col.top.filter(
+                    ref =>
+                      !(
+                        ref.num === willDeleteCard.num &&
+                        ref.family === willDeleteCard.family
+                      )
+                  ),
+                  bottom: col.bottom.filter(
+                    ref =>
+                      !(
+                        ref.num === willDeleteCard.num &&
+                        ref.family === willDeleteCard.family
+                      )
+                  )
+                }))
+              );
+              setWillDeleteCard(null);
+            }}
+          >
+            Remove
+          </button>
+        )}
       </div>
       {addToColumn && (
         <ModalGrid
